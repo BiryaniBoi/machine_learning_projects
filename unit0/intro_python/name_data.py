@@ -9,30 +9,39 @@
 # https://www.ssa.gov/oact/babynames/index.html
 
 # replace with your name!
-my_name = ""
+my_name = "Sean"
 
 # let's load the data into a dictionary. Then, answer some
 # questions.
+file = open("names/" + my_name+".txt")
 
+years = {int(line.split()[0]):int(line.split()[1]) for line in file.read().splitlines()}
+
+print(years)
 
 # Hint: For some of these, you night want a for loop from 
-#		1800 to 2024 (inclusive). you can give a for loop a 
+#		1880 to 2024 (inclusive). you can give a for loop a 
 # 		stop and a start with range, i.e. range(2,5) is 2, 3, 4
 # Remember, the dictionary may not contain every year from 1880,
 # since it doesn't include years with < 5 babies.
 
 # What is the first year your name had more than 5 babies?
-
+for year in range(1880,2025):
+    if year in years:
+        break
+print(year)
 # How many years did your name have at least 5 babies?
-
+print(sum(1 for year in range(1880,2024) if year in years))
 # Which year did your name have the most?
-
+max_year = max(years, key = years.get)
+print(max_year)
 # How many babies were in that year?
-
+print(years[max_year])
 # Which year(s) did your name NOT make the top 1000?
-
+missed_years = [year for year in range(1880,2024) if year not in years]
+print(missed_years)
 # For the years your name had at least 5 babies, what is the
 # average number of babies per year?
-
+print(sum(years.values())/len(years))
 
 
