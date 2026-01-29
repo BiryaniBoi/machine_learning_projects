@@ -46,8 +46,9 @@ def get_bacon_path(data, actor_id):
         if curr_id not in visited:
             visited.add(curr_id)
             for actor in acted_with[curr_id]:
-                queue.append(partial_path + [actor])
-    return []
+                if actor not in visited:
+                    queue.append(partial_path + [actor])
+    return None
 
 def get_path(data, actor_id_0, actor_id_1):
     acted_with = make_actor_dictionary(data)
@@ -61,8 +62,9 @@ def get_path(data, actor_id_0, actor_id_1):
         if curr_id not in visited:
             visited.add(curr_id)
             for actor in acted_with[curr_id]:
-                queue.append(partial_path + [actor])
-    return []
+                if actor not in visited:
+                    queue.append(partial_path + [actor])
+    return None
 
 # the three functions below this comment are fully optional - 
 # feel free to do if you want! These are not tested with 
