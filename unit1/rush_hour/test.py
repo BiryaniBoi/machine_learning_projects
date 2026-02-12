@@ -219,17 +219,17 @@ class TestMoves(unittest.TestCase):
 
 	def test_down_move(self):
 		car = [(1, 1), (2, 1)]
-		result = rush.getUpMove(car)
+		result = rush.getDownMove(car)
 		self.assertEqual(result, [(2, 1), (3, 1)], "Down move is incorrect")
 
 	def test_left_move(self):
 		car = [(1, 1), (1, 2)]
-		result = rush.getUpMove(car)
+		result = rush.getLeftMove(car)
 		self.assertEqual(result, [(1, 0), (1, 1)], "Left move is incorrect")
 
 	def test_right_move(self):
 		car = [(1, 1), (1, 2)]
-		result = rush.getUpMove(car)
+		result = rush.getRightMove(car)
 		self.assertEqual(result, [(1, 2), (1, 3)], "Right move is incorrect")
 
 class TestSuccessors(unittest.TestCase):

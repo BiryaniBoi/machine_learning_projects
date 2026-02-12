@@ -8,20 +8,37 @@ def makeCars(board):
     Takes in a 2D board representation and returns 
     the cars dictionary.
     '''
-    pass
+    cars = {}
+    for r in range(len(board)):
+        for c in range(len(board[0])):
+            car = board[r][c]
+            if car != -1:
+                if car not in cars:
+                    cars[car] = []
+                cars[car].append((r,c))
+    return cars
 
 def makeBoard(cars):
     '''
     Takes in the cars dictionary and returns the 2D board
     representation.
     '''
-    pass
+    return [[find_car(cars, (r,c)) for c in range(6)] for r in range(6)]
+
+def find_car(cars: dict, coord: tuple) -> int:
+    """
+    This is stupid
+    """
+    for car in cars:
+        if coord in cars[car]:
+            return car
+    return -1
 
 def isHorizontal(car_coords):
     '''
     Returns true if this is a horizontal car, and false otherwise.
     '''
-    pass
+    return car_coords[0][0] == car_coords[1][0]
 
 def canMoveUp(board, car_coords):
     '''
@@ -29,7 +46,8 @@ def canMoveUp(board, car_coords):
     Note that the coordinates should be in order, so if this is a
     vertical car the first coordinate should be the "top" of the car.
     '''
-    pass
+    row, col = car_coords[0]
+    return (row > 0) and board[row-1][col] == -1
 
 def canMoveDown(board, car_coords):
     '''
@@ -37,7 +55,9 @@ def canMoveDown(board, car_coords):
     Note that the coordinates should be in order, so if this is a
     vertical car the last coordinate should be the "bottom" of the car.
     '''
-    pass
+    row, col = car_coords[-1]
+    return (row < len(board)-1) and board[row+1][col] == -1
+    
 
 def canMoveLeft(board, car_coords):
     '''
@@ -45,7 +65,9 @@ def canMoveLeft(board, car_coords):
     Note that the coordinates should be in order, so if this is a
     horizontal car the first coordinate should be the "left" of the car.
     '''
-    pass
+    row, col = car_coords[0]
+    return (col > 0) and board[row][col-1] == -1
+    
 
 def canMoveRight(board, car_coords):
     '''
@@ -53,7 +75,9 @@ def canMoveRight(board, car_coords):
     Note that the coordinates should be in order, so if this is a
     horizontal car the last coordinate should be the "right" of the car.
     '''
-    pass
+    row, col = car_coords[-1]
+    return (col < len(board)-1) and board[row][col+1] == -1
+    
 
 def getUpMove(car_coords):
     '''
@@ -64,7 +88,8 @@ def getUpMove(car_coords):
     [(1, 1), (2, 1)], this method would return
     [(0, 1), (1, 1)].
     '''
-    pass
+    return [(r-1,c) for r,c in car_coords]
+
 
 def getDownMove(car_coords):
     '''
@@ -75,7 +100,7 @@ def getDownMove(car_coords):
     [(1, 1), (2, 1)], this method would return
     [(2, 1), (3, 1)].
     '''
-    pass
+    return [(r+1,c) for r,c in car_coords]
 
 def getLeftMove(car_coords):
     '''
@@ -86,7 +111,7 @@ def getLeftMove(car_coords):
     [(1, 1), (1, 2)], this method would return
     [(1, 0), (1, 1)].
     '''
-    pass
+    return [(r,c-1) for r,c in car_coords]
 
 def getRightMove(car_coords):
     '''
@@ -97,7 +122,7 @@ def getRightMove(car_coords):
     [(1, 1), (1, 2)], this method would return
     [(1, 2), (1, 3)].
     '''
-    pass
+    return [(r,c+1) for r,c in car_coords]
 
 def getSuccessors(board):
     '''
@@ -105,14 +130,36 @@ def getSuccessors(board):
     Make sure you use either the helper method copyCars
     or copyBoard to create a copy for each successor.
     '''
-    pass
+    boards = []
+    cars = makeCars(board)
+    for car in cars:
+        coords = cars[car]
+        if isHorizontal(coords):
+            if canMoveLeft(board, coords):
+                copyCars = makeCars(board)
+                copyCars[car] = getLeftMove(coords)
+                boards.append(makeBoard(copyCars))
+            if canMoveRight(board, coords):
+                copyCars = makeCars(board)
+                copyCars[car] = getRightMove(coords)
+                boards.append(makeBoard(copyCars))       
+        else:
+            if canMoveUp(board, coords):
+                copyCars = makeCars(board)
+                copyCars[car] = getUpMove(coords)
+                boards.append(makeBoard(copyCars))
+            if canMoveDown(board, coords):
+                copyCars = makeCars(board)
+                copyCars[car] = getDownMove(coords)
+                boards.append(makeBoard(copyCars))
+    return boards
 
 def goalTest(board):
     '''
     The red car (car id number 0) must take up locations 
     (2,4) and (2,5) to be a "finished" search.
     '''
-    pass
+    return board[2][4] == 0 and board[2][5] == 0
 
 def BFS(start):
     '''
@@ -150,7 +197,7 @@ def greedySearch(start):
     # below, changes heuristic being used
 
     ### CHANGE THIS TO CHANGE HEURISTIC ### 
-    heuristic = distToExitHeuristic
+    heuristic = yourHeuristic
     ###
 
     q = PriorityQueue()
@@ -175,7 +222,9 @@ def distToExitHeuristic(board):
     '''
     How far is the car from the exit location?
     '''
-    pass
+    for c in range(len(board[0])):
+        if board[2][c] == 0:
+            return 4-c #find the first part of the car then subtract from 4
 
 def carsBlockingHeuristic(board):
     """
@@ -184,7 +233,16 @@ def carsBlockingHeuristic(board):
     h(B) = 1 if the red car is not at the goal but there's nothing in the way when the board is in state S
     h(B) = 2 if the red car is not at the goal and there is at least one car in between it and the goal when the board is in state S
     """
-    pass
+    if goalTest(board):
+        return 0
+    #start_col = makeCars(board)[0][0][1] #get where the end of the goal car is in state S
+    seen = False
+    for c in range(5): #loop through all rows between where we are and where we need to be
+        if board[2][c] == 0 and not seen:
+            seen = True
+        if seen and board[2][c] != -1 and board[2][c] != 0:
+            return 2
+    return 1
 
 def yourHeuristic(board):
     '''
@@ -194,7 +252,16 @@ def yourHeuristic(board):
     blocking heuristic? How can you improve on the distance to exit heuristic?
     Time to be creative :)
     '''
-    pass
+    if goalTest(board):
+        return 0
+    seen = False
+    cars = 0
+    for c in range(5):
+        if board[2][c] == 0 and not seen:
+            seen = True
+        if seen and board[2][c] != -1 and board[2][c] != 0:
+            cars += 1
+    return cars + distToExitHeuristic(board)
 
 
 if __name__=="__main__":
@@ -203,6 +270,6 @@ if __name__=="__main__":
     plot(board)
 
     # # uncomment for successors!
-    # successors = getSuccessors(board)
-    # plotSuccessors(board, successors)
+    successors = getSuccessors(board)
+    plotSuccessors(board, successors)
     plt.show()

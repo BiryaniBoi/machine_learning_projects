@@ -5,10 +5,10 @@ from rush import *
 from helper import *
 
 # SET THIS to whatever you want to use to solve
-solver = astarCarsBlocking
+solver = greedySearch
 
 # SET THIS to the file you want to look at
-filename = "jams/easy.txt"
+filename = "jams/hard.txt"
 
 # SET THIS to control the fps of the animation (speed)
 fps = 3
